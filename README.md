@@ -1,7 +1,6 @@
 # vnostr - V module that providing Nostr types and functions
 
 ![V Language](https://img.shields.io/badge/language-V-blue.svg)
-![C Langauge](https://img.shields.io/badge/language-C-blue.svg)
 
 This module depends on [ismyhc.vsecp256k1](https://github.com/ismyhc/vsecp256k1) and [ismyhc.vbech32](https://github.com/ismyhc/vbech32) modules.
 
