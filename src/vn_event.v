@@ -1,6 +1,5 @@
 module vnostr
 
-import time
 import json
 
 pub struct VNEvent {

@@ -2,23 +2,15 @@ import vnostr
 import x.json2
 
 fn main() {
-	keypair := vnostr.new_keypair()!
+	keypair := vnostr.VNKeyPair.new()!
 	println('Private key: ${keypair.private_key_hex}')
 	println('Public key: ${keypair.public_key_hex}')
 	println('Bech32 private key: ${keypair.private_key_nsec}')
 	println('Bech32 public key: ${keypair.public_key_npub}')
 
-	// keypair2 := vnostr.keypair_from_private_key_hex('9592ea06b6e24a4aeab3ed283ade5e51b91024532eaff037f64ad1a0950d9822')!
-	// println('Private key: ${keypair2.private_key_hex}')
-	// println('Public key: ${keypair2.public_key_hex}')
-	// println('Bech32 private key: ${keypair2.private_key_nsec}')
-	// println('Bech32 public key: ${keypair2.public_key_npub}')
+	filter := vnostr.VNFilter.new(ids: ['1', '2'])
 
-	// keypair3 := vnostr.keypair_from_private_key_nsec('nsec1jkfw5p4kuf9y464na55r4hj72xu3qfzn96hlqdlkftg6p9gdnq3qkq620h')!
-	// println('Private key: ${keypair3.private_key_hex}')
-	// println('Public key: ${keypair3.public_key_hex}')
-	// println('Bech32 private key: ${keypair3.private_key_nsec}')
-	// println('Bech32 public key: ${keypair3.public_key_npub}')
+	dump(filter)
 
 	// 	j := '{
 	//     "id": "4376c65d2f232afbe9b882a35baa4f6fe8667c4e684749af565f981833ed6a65",

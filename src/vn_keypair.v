@@ -4,18 +4,20 @@ import encoding.hex
 import ismyhc.vsecp256k1
 import ismyhc.vbech32
 
+// VNKeyPair is a struct that holds the keypair for Nostr
 pub struct VNKeyPair {
-	keypair           vsecp256k1.KeyPair
-	private_key_bytes []u8
-	public_key_bytes  []u8
+	keypair vsecp256k1.KeyPair
 pub:
-	private_key_hex  string
-	private_key_nsec string
-	public_key_hex   string
-	public_key_npub  string
+	private_key_bytes []u8
+	private_key_hex   string
+	private_key_nsec  string
+	public_key_bytes  []u8
+	public_key_hex    string
+	public_key_npub   string
 }
 
-pub fn new_keypair() !VNKeyPair {
+// VNKeyPair.new creates a new VNKeyPair
+pub fn VNKeyPair.new() !VNKeyPair {
 	ctx := vsecp256k1.create_context() or { return error('Failed to create context') }
 	private_key_bytes := vsecp256k1.generate_private_key() or {
 		ctx.destroy()
@@ -24,7 +26,8 @@ pub fn new_keypair() !VNKeyPair {
 	return keypair_from_bytes(private_key_bytes, ctx)
 }
 
-pub fn keypair_from_private_key_hex(pkh string) !VNKeyPair {
+// VNKeyPair.from_private_key_hex creates a new VNKeyPair from a private key in hex format
+pub fn VNKeyPair.from_private_key_hex(pkh string) !VNKeyPair {
 	ctx := vsecp256k1.create_context() or { return error('Failed to create context') }
 	private_key_bytes := hex.decode(pkh) or {
 		ctx.destroy()
@@ -33,7 +36,8 @@ pub fn keypair_from_private_key_hex(pkh string) !VNKeyPair {
 	return keypair_from_bytes(private_key_bytes, ctx)
 }
 
-pub fn keypair_from_private_key_nsec(bpk string) !VNKeyPair {
+// VNKeyPair.from_private_key_nsec creates a new VNKeyPair from a private key in bech32 format
+pub fn VNKeyPair.from_private_key_nsec(bpk string) !VNKeyPair {
 	hrp, private_key_bytes := vbech32.decode_to_base256(bpk) or {
 		return error('Failed to decode private key')
 	}
@@ -64,9 +68,9 @@ fn keypair_from_bytes(pkb []u8, ctx &vsecp256k1.Context) !VNKeyPair {
 	return VNKeyPair{
 		keypair:           keypair
 		private_key_bytes: pkb
-		public_key_bytes:  x_pubkey_bytes
 		private_key_hex:   hex.encode(pkb)
 		private_key_nsec:  bech32_private_key
+		public_key_bytes:  x_pubkey_bytes
 		public_key_hex:    hex.encode(x_pubkey_bytes)
 		public_key_npub:   bech32_public_key
 	}
