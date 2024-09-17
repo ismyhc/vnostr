@@ -53,7 +53,7 @@ fn keypair_from_bytes(pkb []u8, ctx &vsecp256k1.Context) !VNKeyPair {
 		ctx.destroy()
 	}
 	keypair := ctx.create_keypair(pkb) or { return error('Failed to create keypair') }
-	x_pubkey, _ := ctx.create_xonly_pubkey(keypair) or {
+	x_pubkey := ctx.create_xonly_pubkey_from_keypair(keypair) or {
 		return error('Failed to create xonly pubkey')
 	}
 	x_pubkey_bytes := ctx.serialize_xonly_pubkey(x_pubkey) or {
@@ -74,4 +74,12 @@ fn keypair_from_bytes(pkb []u8, ctx &vsecp256k1.Context) !VNKeyPair {
 		public_key_hex:    hex.encode(x_pubkey_bytes)
 		public_key_npub:   bech32_public_key
 	}
+}
+
+fn (kp VNKeyPair) sign(data []u8) ![]u8 {
+	ctx := vsecp256k1.create_context() or { return error('Failed to create context') }
+	defer {
+		ctx.destroy()
+	}
+	return ctx.sign_schnorr(data, kp.keypair) or { return error('Failed to sign') }
 }
