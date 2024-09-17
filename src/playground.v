@@ -19,4 +19,16 @@
 // 	println(signed_evet.valid_signature())
 
 // 	dump(signed_evet.stringify())
+
+// 	bing := ret() or {
+// 		println(err.str())
+// 		return
+// 	}
+// }
+
+// fn ret() !string {
+// 	if 0 == 1 {
+// 		return 'hello'
+// 	}
+// 	return error('fuck you')
 // }
