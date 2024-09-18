@@ -51,6 +51,10 @@ pub fn (e &VNEvent) stringify() string {
 	return json.encode(e)
 }
 
+pub fn (e &VNEvent) strfry_stringify() string {
+	return '{"content":"${e.content}","id":"${e.id}","pubkey":"${e.pubkey}","created_at":${e.created_at},"kind":${e.kind},"tags":${json.encode(e.tags)},"sig":"${e.sig}"}'
+}
+
 pub fn (e &VNEvent) data_for_signature() []u8 {
 	return '[0,"${e.pubkey}",${e.created_at},${e.kind},${json.encode(e.tags)},"${e.content}"]'.bytes()
 }
