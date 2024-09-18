@@ -60,6 +60,27 @@ pub fn (e &VNEvent) valid_id() bool {
 	return sha256.sum(data).hex() == e.id
 }
 
+pub fn (e &VNEvent) pow_difficulty() int {
+	bytes := hex.decode(e.id) or {
+		println('Invalid hex string')
+		return -1
+	}
+
+	mut leading_zero_bits := 0
+
+	for b in bytes {
+		for i := 7; i >= 0; i-- {
+			if (b & (1 << i)) == 0 {
+				leading_zero_bits++
+			} else {
+				return leading_zero_bits
+			}
+		}
+	}
+
+	return leading_zero_bits
+}
+
 pub fn (e &VNEvent) valid_signature() bool {
 	data := e.data_for_signature()
 	id := sha256.sum(data)
