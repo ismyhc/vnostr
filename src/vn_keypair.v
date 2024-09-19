@@ -48,6 +48,19 @@ pub fn VNKeyPair.from_private_key_nsec(bpk string) !VNKeyPair {
 	return keypair_from_bytes(private_key_bytes, ctx)
 }
 
+pub fn valid_public_key_hex(pkx string) bool {
+	pkb := hex.decode(pkx) or { return false }
+	ctx := vsecp256k1.create_context() or { return false }
+	if pkb.len != 32 {
+		return false
+	}
+	defer {
+		ctx.destroy()
+	}
+	_ := ctx.create_xonly_pubkey_from_pubkey_bytes(pkb) or { return false }
+	return true
+}
+
 fn keypair_from_bytes(pkb []u8, ctx &vsecp256k1.Context) !VNKeyPair {
 	defer {
 		ctx.destroy()
