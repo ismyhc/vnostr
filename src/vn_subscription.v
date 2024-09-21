@@ -29,5 +29,5 @@ pub fn VNSubscription.new(p VNSubscriptionParams) VNSubscription {
 }
 
 pub fn (s &VNSubscription) subscription_message() string {
-	return '["REQ", "${s.id}", ${json.encode(s.filters)} ]'
+	return '["REQ", "${s.id}", ${json.encode(s.filters.first())} ]'
 }
