@@ -1,6 +1,5 @@
 module vnostr
 import x.json2
-import json
 
 // VNFilterParams is a struct that holds the parameters for creating a new `VNFilter` with the static function `VNFilter.new`.
 @[params]
@@ -49,22 +48,25 @@ pub fn VNFilter.new(p VNFilterParams) VNFilter {
 pub fn (f VNFilter) json_str() string {
 	mut data := map[string]json2.Any
 	if ids := f.ids {
-		data['ids'] = json2.encode[[]string](ids)
+		arr := []json2.Any{ids}
+		data['ids'] = arr
 	}
 	if authors := f.authors {
-		data['authos'] = json2.encode[[]string](authors)
+		arr := []json2.Any{authors}
+		data['authos'] = arr
 	}
 	if kinds := f.kinds {
-		data['kinds'] = json.encode(kinds)
+		arr := []json2.Any{kinds}
+		data['kinds'] = arr
 	}
 	if since := f.since {
-		data['since'] = json2.encode(since)
+		data['since'] = since
 	}
 	if until := f.until {
-		data['until'] = json2.encode(until)
+		data['until'] = until
 	}
 	if limit := f.limit {
-		data['limit'] = json2.encode(limit)
+		data['limit'] = limit
 	}
 	if tags := f.tags {
 		for tag in tags {
