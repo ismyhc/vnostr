@@ -1,5 +1,6 @@
 module vnostr
 import x.json2
+import json
 
 // VNFilterParams is a struct that holds the parameters for creating a new `VNFilter` with the static function `VNFilter.new`.
 @[params]
@@ -46,41 +47,39 @@ pub fn VNFilter.new(p VNFilterParams) VNFilter {
 }
 
 pub fn (f VNFilter) json_str() string {
-	mut data := map[string]json2.Any
+
+	mut ret := '{'
+
 	if ids := f.ids {
-		mut arr := []json2.Any{}
-		arr << ids
-		data['ids'] = arr
+		ret += '"kinds":${json.encode(ids)}'
 	}
 	if authors := f.authors {
-		mut arr := []json2.Any{}
-		arr << authors
-		data['authors'] = json2.Any(arr)
+		ret += ',"authors":${json.encode(authors)}'
 	}
 	if mut kinds := f.kinds {
-		data['kinds'] = []json2.Any{}(kinds)
+		ret += ',"kinds":${json.encode(kinds)}'
 	}
 	if since := f.since {
-		data['since'] = since
+		ret += ',"since":${json.encode(since)}'
 	}
 	if until := f.until {
-		data['until'] = until
+		ret += ',"until":${json.encode(until)}'
 	}
 	if limit := f.limit {
-		data['limit'] = limit
+		ret += ',"limit":${json.encode(limit)}'
 	}
-	if tags := f.tags {
-		for tag in tags {
-			if tag.len > 0 {
-				tag_key := '${tag[0]}'
-				if tag.len == 1 {
-					data[tag_key] = json2.encode(['']) // TODO: Not sure about this
-				} else {
-					data[tag_key] = json2.encode(tag[1..])
-				}
-			}
-		}
-	}
-
-	return json2.encode(data)
+	// if tags := f.tags {
+	// 	for tag in tags {
+	// 		if tag.len > 0 {
+	// 			tag_key := '${tag[0]}'
+	// 			if tag.len == 1 {
+	// 				data[tag_key] = json2.encode(['']) // TODO: Not sure about this
+	// 			} else {
+	// 				data[tag_key] = json2.encode(tag[1..])
+	// 			}
+	// 		}
+	// 	}
+	// }
+	ret += '}'
+	return ret
 }
