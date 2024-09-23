@@ -2,6 +2,7 @@ module vnostr
 
 import encoding.hex
 import json
+import x.json2
 import crypto.sha256
 import ismyhc.vsecp256k1
 
@@ -110,4 +111,98 @@ pub fn (e &VNEvent) sign(kp VNKeyPair) !VNEvent {
 		content:    e.content
 		sig:        sig.hex()
 	}
+}
+
+pub struct RelayMessageEvent {
+	pub:
+		subscription_id string
+		event 			VNEvent
+}
+
+pub struct RelayMessageOK {
+	pub:
+		event_id	string
+		accepted	bool
+		message		string
+}
+
+pub struct RelayMessageEOSE {
+	pub:
+		subscription_id string
+}
+
+pub struct RelayMessageClosed {
+	pub:
+		subscription_id string
+		message			string
+}
+
+pub struct RelayMessageNotice {
+	pub:
+		message			string
+}
+
+pub type RelayMessage = RelayMessageEvent | RelayMessageOK | RelayMessageEOSE | RelayMessageClosed | RelayMessageNotice
+
+pub fn get_relay_message(msg []u8) !RelayMessage {
+	data := json2.raw_decode(msg.bytestr()) or { 
+		return err
+	}
+	data_array := data.arr()
+	if data_array.len == 0 {
+		return error("Invalid Relay Message")
+	}
+
+	event_message_type := data_array[0].str()
+	
+	match event_message_type {
+		"EVENT" {
+			if data_array.len == 3 {
+				ev := data_array[2].str()
+				event := json.decode(VNEvent, ev) or {
+					return err
+				}
+				return vnostr.RelayMessageEvent{
+					subscription_id: data_array[1].str() 
+					event: event
+				}
+			}
+		}
+		"OK" {
+			if data_array.len == 3 {
+				return vnostr.RelayMessageOK{
+					event_id: data_array[1].str()
+					accepted: data_array[2].bool()
+					message: data_array[3].str()
+				}
+			}
+		}
+		"EOSE" {
+			if data_array.len == 2 {
+				return vnostr.RelayMessageEOSE{
+					subscription_id: data_array[1].str()
+				}
+			}
+		}
+		"CLOSED" {
+			if data_array.len == 3 {
+				return vnostr.RelayMessageClosed{
+					subscription_id: data_array[1].str()
+					message: data_array[2].str()
+				}
+			}
+		}
+		"NOTICE" {
+			if data_array.len == 2 {
+				return vnostr.RelayMessageNotice{
+					message: data_array[1].str()
+				}
+			}
+		}
+		else {
+			return error("Invalid Relay Message")
+		}
+	}
+
+	return error("Invalid Relay Message")
 }
