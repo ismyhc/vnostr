@@ -57,10 +57,8 @@ pub fn (f VNFilter) json_str() string {
 		arr << authors
 		data['authors'] = json2.Any(arr)
 	}
-	if kinds := f.kinds {
-		mut arr := []json2.Any{}
-		arr << kinds
-		data['kinds'] = json2.Any(arr)
+	if mut kinds := f.kinds {
+		data['kinds'] = json2.Any[](kinds)
 	}
 	if since := f.since {
 		data['since'] = since
