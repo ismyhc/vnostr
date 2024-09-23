@@ -84,9 +84,14 @@ pub fn (f VNFilter) json_str() string {
 			if tag.len > 0 {
 				tag_key := '${tag[0]}'
 				if tag.len == 1 {
-					data[tag_key] = json2.encode(['']) // TODO: Not sure about this
+					data[tag_key] = '' // TODO: Not sure about this
 				} else {
-					data[tag_key] = json2.encode(tag[1..])
+					tag_values := tag[1..].clone()
+					mut values := []json2.Any{}
+					for v in tag_values {
+						values << v
+					}
+					data[tag_key] = values
 				}
 			}
 		}
