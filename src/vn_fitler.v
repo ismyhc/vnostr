@@ -48,13 +48,13 @@ pub fn VNFilter.new(p VNFilterParams) VNFilter {
 pub fn (f VNFilter) json_str() string {
 	mut data := map[string]json2.Any
 	if ids := f.ids {
-		data['ids'] = json2.encode(ids)
+		data['ids'] = json2.encode[[]string](ids)
 	}
 	if authors := f.authors {
-		data['authos'] = json2.encode(authors)
+		data['authos'] = json2.encode[[]string](authors)
 	}
 	if kinds := f.kinds {
-		data['kinds'] = json2.encode(kinds)
+		data['kinds'] = json2.encode[[]u16](kinds)
 	}
 	if since := f.since {
 		data['since'] = json2.encode(since)
