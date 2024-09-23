@@ -48,38 +48,49 @@ pub fn VNFilter.new(p VNFilterParams) VNFilter {
 
 pub fn (f VNFilter) json_str() string {
 
-	mut ret := '{'
-
+	mut data := map[string]json2.Any
 	if ids := f.ids {
-		ret += '"kinds":${json.encode(ids)}'
+		mut arr := []json2.Any{}
+		for id in ids {
+			arr << id
+		}
+		data['ids'] = arr
 	}
 	if authors := f.authors {
-		ret += ',"authors":${json.encode(authors)}'
+		mut arr := []json2.Any{}
+		for author in authors {
+			arr << author
+		}
+		data['authors'] = arr
 	}
 	if mut kinds := f.kinds {
-		ret += ',"kinds":${json.encode(kinds)}'
+		mut arr := []json2.Any{}
+		for kind in kinds {
+			arr << kind
+		}
+		data['kinds'] = arr
 	}
 	if since := f.since {
-		ret += ',"since":${json.encode(since)}'
+		data['since'] = since
 	}
 	if until := f.until {
-		ret += ',"until":${json.encode(until)}'
+		data['until'] = until
 	}
 	if limit := f.limit {
-		ret += ',"limit":${json.encode(limit)}'
+		data['limit'] = limit
 	}
-	// if tags := f.tags {
-	// 	for tag in tags {
-	// 		if tag.len > 0 {
-	// 			tag_key := '${tag[0]}'
-	// 			if tag.len == 1 {
-	// 				data[tag_key] = json2.encode(['']) // TODO: Not sure about this
-	// 			} else {
-	// 				data[tag_key] = json2.encode(tag[1..])
-	// 			}
-	// 		}
-	// 	}
-	// }
-	ret += '}'
-	return ret
+	if tags := f.tags {
+		for tag in tags {
+			if tag.len > 0 {
+				tag_key := '${tag[0]}'
+				if tag.len == 1 {
+					data[tag_key] = json2.encode(['']) // TODO: Not sure about this
+				} else {
+					data[tag_key] = json2.encode(tag[1..])
+				}
+			}
+		}
+	}
+
+	return json2.encode(data)
 }
