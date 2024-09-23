@@ -1,7 +1,6 @@
 module vnostr
 
 import rand
-import x.json2
 
 // VNSubscriptionParams is a struct that holds the parameters for creating a new `VNSubscription` with the static function `VNSubscription.new`.
 @[params]
@@ -28,7 +27,11 @@ pub fn VNSubscription.new(p VNSubscriptionParams) VNSubscription {
 	}
 }
 
-pub fn (s &VNSubscription) json_str() string {
-	ff := s.filters.first().json_str()
+pub fn (s &VNSubscription) subscribe() string {
+	ff := s.filters.first().json_str() // TODO: Multi filter
 	return '["REQ", "${s.id}", ${ff} ]'
+}
+
+pub fn (s &VNSubscription) unsubscribe() string {
+	return '["CLOSE", "${s.id}"]'
 }

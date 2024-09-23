@@ -1,6 +1,5 @@
 module vnostr
 import x.json2
-import json
 
 // VNFilterParams is a struct that holds the parameters for creating a new `VNFilter` with the static function `VNFilter.new`.
 @[params]
