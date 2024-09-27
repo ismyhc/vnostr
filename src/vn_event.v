@@ -44,6 +44,10 @@ pub fn (e &VNEvent) event_relay_message(subscription_id string) string {
 	return '["EVENT", "${subscription_id}", ${json.encode(e)}]'
 }
 
+pub fn (e &VNEvent) event_client_message() string {
+	return '["EVENT", ${json.encode(e)}]'
+}
+
 pub fn (e VNEvent) filter_tags_by_name(tag_name string) [][]string {
 	return e.tags.filter(it.len > 0 && it[0] == tag_name)
 }
@@ -169,7 +173,7 @@ pub fn get_relay_message(msg []u8) !RelayMessage {
 			}
 		}
 		"OK" {
-			if data_array.len == 3 {
+			if data_array.len == 4 {
 				return vnostr.RelayMessageOK{
 					event_id: data_array[1].str()
 					accepted: data_array[2].bool()
