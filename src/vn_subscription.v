@@ -26,3 +26,12 @@ pub fn VNSubscription.new(p VNSubscriptionParams) VNSubscription {
 		filters: p.filters
 	}
 }
+
+pub fn (s &VNSubscription) subscribe() string {
+	ff := s.filters.first().json_str() // TODO: Multi filter
+	return '["REQ", "${s.id}", ${ff} ]'
+}
+
+pub fn (s &VNSubscription) unsubscribe() string {
+	return '["CLOSE", "${s.id}"]'
+}
