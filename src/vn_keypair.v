@@ -18,66 +18,51 @@ pub:
 
 // VNKeyPair.new creates a new VNKeyPair
 pub fn VNKeyPair.new() !VNKeyPair {
-	ctx := vsecp256k1.create_context() or { return error('Failed to create context') }
-	private_key_bytes := vsecp256k1.generate_private_key() or {
-		ctx.destroy()
-		return error('Failed to generate private key')
-	}
+	private_key_bytes := vsecp256k1.generate_private_key() or { return err }
+	ctx := vsecp256k1.create_context() or { return err }
+	defer { ctx.destroy() }
 	return keypair_from_bytes(private_key_bytes, ctx)
 }
 
 // VNKeyPair.from_private_key_hex creates a new VNKeyPair from a private key in hex format
 pub fn VNKeyPair.from_private_key_hex(pkh string) !VNKeyPair {
-	ctx := vsecp256k1.create_context() or { return error('Failed to create context') }
-	private_key_bytes := hex.decode(pkh) or {
-		ctx.destroy()
-		return error('Failed to decode private key')
-	}
+	private_key_bytes := hex.decode(pkh) or { return err }
+	ctx := vsecp256k1.create_context() or { return err }
+	defer { ctx.destroy() }
 	return keypair_from_bytes(private_key_bytes, ctx)
 }
 
 // VNKeyPair.from_private_key_nsec creates a new VNKeyPair from a private key in bech32 format
 pub fn VNKeyPair.from_private_key_nsec(bpk string) !VNKeyPair {
-	hrp, private_key_bytes := vbech32.decode_to_base256(bpk) or {
-		return error('Failed to decode private key')
-	}
+	hrp, private_key_bytes := vbech32.decode_to_base256(bpk) or { return err }
 	if hrp != 'nsec' {
 		return error('Invalid HRP')
 	}
-	ctx := vsecp256k1.create_context() or { return error('Failed to create context') }
+	ctx := vsecp256k1.create_context() or { return err }
+	defer { ctx.destroy() }
 	return keypair_from_bytes(private_key_bytes, ctx)
 }
 
 pub fn valid_public_key_hex(pkx string) bool {
 	pkb := hex.decode(pkx) or { return false }
-	ctx := vsecp256k1.create_context() or { return false }
 	if pkb.len != 32 {
 		return false
 	}
-	defer {
-		ctx.destroy()
-	}
+	ctx := vsecp256k1.create_context() or { return false }
+	defer { ctx.destroy() }
 	_ := ctx.create_xonly_pubkey_from_pubkey_bytes(pkb) or { return false }
 	return true
 }
 
 fn keypair_from_bytes(pkb []u8, ctx &vsecp256k1.Context) !VNKeyPair {
-	defer {
-		ctx.destroy()
-	}
-	keypair := ctx.create_keypair(pkb) or { return error('Failed to create keypair') }
-	x_pubkey := ctx.create_xonly_pubkey_from_keypair(keypair) or {
-		return error('Failed to create xonly pubkey')
-	}
-	x_pubkey_bytes := ctx.serialize_xonly_pubkey(x_pubkey) or {
-		return error('Failed to serialize xonly pubkey')
-	}
-	bech32_private_key := vbech32.encode_from_base256('nsec', pkb) or {
-		return error('Failed to encode private key')
-	}
-	bech32_public_key := vbech32.encode_from_base256('npub', x_pubkey_bytes) or {
-		return error('Failed to encode public key')
-	}
+	// defer {
+	//	ctx.destroy()
+	//}
+	keypair := ctx.create_keypair(pkb) or { return err }
+	x_pubkey := ctx.create_xonly_pubkey_from_keypair(keypair) or { return err }
+	x_pubkey_bytes := ctx.serialize_xonly_pubkey(x_pubkey) or { return err }
+	bech32_private_key := vbech32.encode_from_base256('nsec', pkb) or { return err }
+	bech32_public_key := vbech32.encode_from_base256('npub', x_pubkey_bytes) or { return err }
 	return VNKeyPair{
 		keypair:           keypair
 		private_key_bytes: pkb
@@ -90,9 +75,7 @@ fn keypair_from_bytes(pkb []u8, ctx &vsecp256k1.Context) !VNKeyPair {
 }
 
 fn (kp VNKeyPair) sign(data []u8) ![]u8 {
-	ctx := vsecp256k1.create_context() or { return error('Failed to create context') }
-	defer {
-		ctx.destroy()
-	}
-	return ctx.sign_schnorr(data, kp.keypair) or { return error('Failed to sign') }
+	ctx := vsecp256k1.create_context() or { return err }
+	defer { ctx.destroy() }
+	return ctx.sign_schnorr(data, kp.keypair) or { return err }
 }
